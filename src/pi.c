@@ -11,10 +11,6 @@
 #include <ctype.h> /* isdigit */
 #include <string.h> /* memcpy */
 
-#ifdef OPENMP
-#include <omp.h>
-#endif
-
 #include "nrdef.h"
 #include "nrutil.h"
 
@@ -24,6 +20,10 @@
 #include "mutil.h"
 #include "simd_macro.h"
 #include "mymacro.h"
+
+#ifdef OPENMP
+#include <omp.h>
+#endif
 
 // #define NB_THREADS 16
 
@@ -53,10 +53,11 @@ double integrale (int64 n)
 	double sum = 0.0;
 
 	double pas = 1.0 / (double)n;
+	long i;
 #ifdef OPENMP
-#pragma omp parallel for reduction(+:sum)
+#pragma omp parallel for reduction(+:sum) private (i)
 #endif  
-	for (long i = 1; i <= n; i++)
+	for (i = 1; i <= n; i++)
 	{
 		double x = ((double)i - 0.5) * pas;
 		sum += 4.0 / (1.0 + pow (x, 2));
@@ -70,7 +71,9 @@ double arctan1 (int64 n)
 {
 	/*formule 7*/
 	double pi = 0;
-	for (int k = 0; k < n; k++)
+	int k;
+
+	for (k = 0; k < n; k++)
 	{
 		if (k % 2 == 0)
 		{

@@ -12,8 +12,9 @@
 #else
 #include <x86intrin.h>
 #endif
-//change for MSVC
-//#include <x86intrin.h>
+
+
+#define OPENMP
 
 // activer ou desactiver le define ci-dessous pour passer du mode de mise au point
 // au mode benchmark

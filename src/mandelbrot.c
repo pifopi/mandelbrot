@@ -9,11 +9,6 @@
 #include <stdlib.h>
 #include <ctype.h> /* isdigit */
 #include <string.h> /* memcpy */
-
-#ifdef OPENMP
-#include <omp.h>
-#endif
-
 #include "nrdef.h"
 #include "nrutil.h"
 
@@ -24,12 +19,17 @@
 #include "simd_macro.h"
 #include "mymacro.h"
 
+#ifdef OPENMP
+#include <omp.h>
+#endif
+
+
 //#include "ia32intrin.h" // si compilateur Intel
 
 #define OPENMP
 // #define OMP_PARAM 
 // #define OMP_PARAM schedule (static)
-#define OMP_PARAM schedule (dynamic)
+#define OMP_PARAM schedule (dynamic, 20)
 // #define OMP_PARAM schedule (dynamic, 30)
 // #define OMP_PARAM schedule (guided)
 // #define OMP_PARAM schedule (runtime)
