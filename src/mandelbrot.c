@@ -29,9 +29,10 @@
 #define OPENMP
 // #define OMP_PARAM 
 // #define OMP_PARAM schedule (static)
-#define OMP_PARAM schedule (dynamic, 20)
-// #define OMP_PARAM schedule (dynamic, 30)
+// #define OMP_PARAM schedule (dynamic)
+#define OMP_PARAM schedule (dynamic, 15)
 // #define OMP_PARAM schedule (guided)
+// #define OMP_PARAM schedule (guided, 1)
 // #define OMP_PARAM schedule (runtime)
 // #define OMP_PARAM for schedule (auto)
 

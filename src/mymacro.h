@@ -6,7 +6,6 @@
 #ifndef __MY_MACRO_H__
 #define __MY_MACRO_H__
 
-// _WIN32 = we're in windows
 #ifdef _WIN32
 #include <intrin.h>
 #else
