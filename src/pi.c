@@ -288,9 +288,9 @@ void routine_arctan (int64 n)
 	//printf("--- ArcTangente n = %8ld ---\n", n);
 	//printf("--------------------\n");
 
-	t0 = (double)__rdtsc ();
+	t0 = (double)_rdtsc ();
 	a1 = arctan_1 (n);
-	t1 = (double)__rdtsc ();
+	t1 = (double)_rdtsc ();
 	dt = t1 - t0;
 	//a2 = arctan_2_3(n);
 	//a5 = arctan_5_239(n);
@@ -330,9 +330,9 @@ void routine_integrale (int64 n)
 	double i;
 	double t0, t1, dt;
 
-	t0 = (double)__rdtsc ();
+	t0 = (double)_rdtsc ();
 	i = integrale (n);
-	t1 = (double)__rdtsc ();
+	t1 = (double)_rdtsc ();
 	dt = t1 - t0;
 
 	disp (n, "integrale", i, dt);

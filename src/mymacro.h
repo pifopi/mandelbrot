@@ -8,10 +8,10 @@
 
 #ifdef _WIN32
 #include <intrin.h>
+#define _rdtsc __rdtsc
 #else
 #include <x86intrin.h>
 #endif
-
 
 #define OPENMP
 
@@ -33,11 +33,11 @@
 #define CHRONO(X,t)                       \
     tmin = 1e38;                          \
     for(run=0; run<nrun; run++) {         \
-        t0 = (double) __rdtsc();           \
+        t0 = (double) _rdtsc();           \
         for(iter=0; iter<niter; iter++) { \
             X;                            \
         }                                 \
-        t1 = (double) __rdtsc();           \
+        t1 = (double) _rdtsc();           \
         dt=t1-t0; if(dt<tmin) tmin = dt;  \
     }                                     \
     t = tmin / (double) niter

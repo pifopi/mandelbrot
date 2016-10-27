@@ -23,18 +23,15 @@
 #include <omp.h>
 #endif
 
+// omp parallel for private (j)
+// omp parallel for private (j) schedule (static)
+// omp parallel for private (j) schedule (dynamic)
+// omp parallel for private (j) schedule (dynamic, 30)
+// omp parallel for private (j) schedule (guided)
+// omp parallel for private (j) schedule (runtime)
+// omp parallel for private (j) schedule (auto)
 
 //#include "ia32intrin.h" // si compilateur Intel
-
-#define OPENMP
-// #define OMP_PARAM 
-// #define OMP_PARAM schedule (static)
-// #define OMP_PARAM schedule (dynamic)
-#define OMP_PARAM schedule (dynamic, 15)
-// #define OMP_PARAM schedule (guided)
-// #define OMP_PARAM schedule (guided, 1)
-// #define OMP_PARAM schedule (runtime)
-// #define OMP_PARAM for schedule (auto)
 
 // --------------------------------------------------
 int mandelbrot_scalar (float a, float b, int max_iter)
@@ -247,9 +244,8 @@ void calc_mandelbrot_scalar (uint32 **M, int h, int w, float a0, float a1, float
 	int j;
 
 #ifdef OPENMP
-#pragma omp parallel for private (i, j) OMP_PARAM
+#pragma omp parallel for private (j) schedule (dynamic)
 #endif
-
 	for (i = 0; i<h; i++) {
 		for (j = 0; j<w; j++) {
 
@@ -274,7 +270,7 @@ void calc_mandelbrot_SIMD_F32 (vuint32 **M, int h, int w, float a0, float a1, fl
 	int j;
 
 #ifdef OPENMP
-#pragma omp parallel for private (i, j) OMP_PARAM
+#pragma omp parallel for private (j) schedule (dynamic)
 #endif
 	for (i = 0; i<h; i++) {
 		for (j = 0; j<w / 4; j++) {
@@ -302,9 +298,8 @@ void calc_mandelbrot_SIMD_I32 (vuint32 **M, int h, int w, float a0, float a1, fl
 	int j;
 
 #ifdef OPENMP
-#pragma omp parallel for private (i, j) OMP_PARAM
+#pragma omp parallel for private (j) schedule (dynamic)
 #endif
-
 	for (i = 0; i<h; i++) {
 		for (j = 0; j<w / 4; j++) {
 
