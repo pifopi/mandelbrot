@@ -20,6 +20,7 @@
 
 #include "mandelbrot.h"
 #include "pi.h"
+#include "mymacro.h"
 
 // ------------
 void info (void)
@@ -38,10 +39,10 @@ void info (void)
 #ifdef OPENMP
 	puts ("OpenMP ON");
 	puts ("adaptez p a votre machine !");
-	p = 1;
-	//p = 8;
-	p = 16;
-	omp_set_num_threads (p);
+	// p = 1;
+	// p = 8;
+	// p = 16;
+	// omp_set_num_threads (p);
 #endif
 
 }
@@ -51,9 +52,6 @@ int main (int argc, char *argv[])
 {
 	info ();
 	main_mandelbrot (argc, argv);
-	//main_pi (argc, argv);
-#ifdef _WIN32
-	getchar ();
-#endif
+	// main_pi (argc, argv);
 	return 0;
 }
