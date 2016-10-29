@@ -44,7 +44,8 @@
 
 
 #define BENCH(X) X
-#define DEBUG(X)
+// #define DEBUG(X)
+#define DEBUG(X) X
 #define VERBOSE(X)
 
 #else

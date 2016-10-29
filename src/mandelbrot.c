@@ -23,14 +23,6 @@
 #include <omp.h>
 #endif
 
-// omp parallel for private (j)
-// omp parallel for private (j) schedule (static)
-// omp parallel for private (j) schedule (dynamic)
-// omp parallel for private (j) schedule (dynamic, 30)
-// omp parallel for private (j) schedule (guided)
-// omp parallel for private (j) schedule (runtime)
-// omp parallel for private (j) schedule (auto)
-
 //#include "ia32intrin.h" // si compilateur Intel
 
 // --------------------------------------------------
@@ -41,16 +33,20 @@ int mandelbrot_scalar (float a, float b, int max_iter)
 	float x = 0;
 	float y = 0;
 
+	float x_temp = 0;
+	float y_temp = 0;
+	
 	while (iter != max_iter)
 	{
-		float x_temp = x * x;
-		float y_temp = y * y;
 		float mult_temp = x * y;
-
+		
 		x = x_temp - y_temp + a;
 		y = 2 * mult_temp + b;
 
-		float z = x * x + y * y;
+		x_temp = x * x; // On évite ainsi de refaire le calcul à l'itaration suivante
+		y_temp = y * y; // On évite ainsi de refaire le calcul à l'itaration suivante
+		
+		float z = x_temp + y_temp;
 
 		if (z > 4)
 		{
@@ -61,6 +57,7 @@ int mandelbrot_scalar (float a, float b, int max_iter)
 	}
 	return iter;
 }
+
 // ------------------------------
 void test_mandelbrot_scalar (void)
 // ------------------------------
@@ -96,6 +93,9 @@ vuint32 mandelbrot_SIMD_F32 (vfloat32 a, vfloat32 b, int max_iter)
 	vfloat32 iter = _mm_set_ps1 (0);
 	vfloat32 x = _mm_set_ps1 (0);// On initialise x0
 	vfloat32 y = _mm_set_ps1 (0);// On initialise y0
+	
+	vfloat32 x_temp = _mm_set_ps1 (0);// On initialise x_temp
+	vfloat32 y_temp = _mm_set_ps1 (0);// On initialise y_temp
 
 	int i = 0;
 	vfloat32 seuil = _mm_set_ps1 (4);// On initialise la condition d'arrêt
@@ -104,14 +104,15 @@ vuint32 mandelbrot_SIMD_F32 (vfloat32 a, vfloat32 b, int max_iter)
 
 	while (i != max_iter)
 	{
-		vfloat32 x_temp = _mm_mul_ps (x, x);// x_n²
-		vfloat32 y_temp = _mm_mul_ps (y, y);// y_n²
 		vfloat32 mult_temp = _mm_mul_ps (x, y);// x_n * y_n
 
 		x = _mm_add_ps (_mm_sub_ps (x_temp, y_temp), a);// x_n² - y_n² + a
 		y = _mm_add_ps (_mm_add_ps (mult_temp, mult_temp), b);// x_n * y_n + x_n * y_n + b
 
-		vfloat32 z = _mm_add_ps (_mm_mul_ps (x, x), _mm_mul_ps (y, y));// x_n+1² + y_n+1²
+		x_temp = _mm_mul_ps (x, x);// x_n+1²
+		y_temp = _mm_mul_ps (y, y);// y_n+1²
+		
+		vfloat32 z = _mm_add_ps (x_temp, y_temp);// x_n+1² + y_n+1²
 
 		vfloat32 masque = _mm_cmple_ps (z, seuil);// On regarde quelles sont les valeurs encore inférieures au seuil
 		if (_mm_movemask_ps (masque) == 0)// Si il n'y a aucune valeur inférieure au seuil, nous quittons la boucle
@@ -139,6 +140,9 @@ vuint32 mandelbrot_SIMD_I32 (vfloat32 a, vfloat32 b, int max_iter)
 	vuint32 iter = _mm_set1_epi32 (0);
 	vfloat32 x = _mm_set_ps1 (0);// On initialise x0
 	vfloat32 y = _mm_set_ps1 (0);// On initialise y0
+	
+	vfloat32 x_temp = _mm_set_ps1 (0);// On initialise x_temp
+	vfloat32 y_temp = _mm_set_ps1 (0);// On initialise y_temp
 
 	int i = 0;
 	vfloat32 seuil = _mm_set_ps1 (4);// On initialise la condition d'arrêt
@@ -147,14 +151,15 @@ vuint32 mandelbrot_SIMD_I32 (vfloat32 a, vfloat32 b, int max_iter)
 
 	while (i != max_iter)
 	{
-		vfloat32 x_temp = _mm_mul_ps (x, x);// x_n²
-		vfloat32 y_temp = _mm_mul_ps (y, y);// y_n²
 		vfloat32 mult_temp = _mm_mul_ps (x, y);// x_n * y_n
 
 		x = _mm_add_ps (_mm_sub_ps (x_temp, y_temp), a);// x_n² - y_n² + a
 		y = _mm_add_ps (_mm_add_ps (mult_temp, mult_temp), b);// x_n * y_n + x_n * y_n + b
 
-		vfloat32 z = _mm_add_ps (_mm_mul_ps (x, x), _mm_mul_ps (y, y));// x_n+1² + y_n+1²
+		x_temp = _mm_mul_ps (x, x);// x_n+1²
+		y_temp = _mm_mul_ps (y, y);// y_n+1²
+		
+		vfloat32 z = _mm_add_ps (x_temp, y_temp);// x_n+1² + y_n+1²
 
 		vfloat32 masque = _mm_cmple_ps (z, seuil);// On regarde quelles sont les valeurs encore inférieures au seuil
 		if (_mm_movemask_ps (masque) == 0)// Si il n'y a aucune valeur inférieure au seuil, nous quittons la boucle
@@ -165,7 +170,6 @@ vuint32 mandelbrot_SIMD_I32 (vfloat32 a, vfloat32 b, int max_iter)
 		iter = _mm_add_epi32 (iter, incr);// On incrémente les valeurs d'iter nécessaires
 		i++;
 
-		//incr = _mm_castps_si128(masque) & un;// On crée le vecteur d'incrémentation pour le prochain tour de boucle  BEWARE MSVC
 		incr = _mm_and_si128 (_mm_castps_si128 (masque), un);
 	}
 
